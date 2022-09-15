@@ -1,6 +1,8 @@
 import 'package:flashchat/login_screen.dart';
 import 'package:flashchat/registration_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'constants.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const id = 'welcome_screen';
@@ -11,11 +13,52 @@ class WelcomeScreen extends StatefulWidget {
   State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> {
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  AnimationController? controller;
+  Animation? animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+      upperBound: 100,
+    );
+
+    // animation = CurvedAnimation(parent: controller!, curve: Curves.decelerate);
+    // controller?.forward();
+
+    // controller?.addStatusListener((status) {
+    //   if (status == AnimationStatus.completed) {
+    //     controller?.reverse(
+    //       from: 1.0,
+    //     );
+    //   } else if (status == AnimationStatus.dismissed) {
+    //     controller?.forward();
+    //   }
+    // });
+
+    animation =
+        ColorTween(begin: Colors.lightGreenAccent, end: Colors.lightBlueAccent)
+            .animate(controller!);
+    controller?.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: animation!.value,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
@@ -28,15 +71,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   tag: 'logo',
                   child: Container(
                     child: Image.asset('images/logo.png'),
-                    height: 60.0,
+                    height: 60,
                   ),
                 ),
-                Text(
-                  'Flash Chat',
-                  style: TextStyle(
-                    fontSize: 45.0,
-                    fontWeight: FontWeight.w900,
-                  ),
+                AnimatedTextKit(
+                  animatedTexts: [
+                    ColorizeAnimatedText(
+                      'Flash Chat',
+                      textStyle: TextStyle(
+                        fontSize: 45.0,
+                        fontWeight: FontWeight.w900,
+                      ),
+                      colors: kColorize,
+                    )
+                  ],
                 ),
               ],
             ),
